@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { isAuthenticated, getUserRole, logoutUser } from '../pages/services/authApi';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, ShoppingBag, UserCircle } from 'lucide-react';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [cartCount, setCartCount] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState('');
+  const [userName, setUserName] = useState('');
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   useEffect(() => {
     updateCartCount();
@@ -24,6 +26,8 @@ const Navbar = () => {
   const checkAuthStatus = () => {
     setIsLoggedIn(isAuthenticated());
     setUserRole(getUserRole());
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    setUserName(user.name || 'User');
   };
 
   const handleLogout = () => {
@@ -60,15 +64,6 @@ const Navbar = () => {
             <Link to="/" className="px-4 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-all">Home</Link>
             <Link to="/shop" className="px-4 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-all">Shop</Link>
             <Link to="/stitching-request" className="px-4 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-all">Custom Stitch</Link>
-            {isLoggedIn && userRole === 'user' && (
-              <Link to="/my-orders" className="px-4 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-all">Orders</Link>
-            )}
-            {isLoggedIn && userRole === 'admin' && (
-              <Link to="/admin" className="px-4 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-all">Admin</Link>
-            )}
-            {isLoggedIn && userRole === 'delivery' && (
-              <Link to="/delivery" className="px-4 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-all">Delivery</Link>
-            )}
             <Link to="/about" className="px-4 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-all">Story</Link>
           </div>
 
@@ -86,39 +81,61 @@ const Navbar = () => {
               )}
             </Link>
             
-            {/* Auth Buttons */}
-            {isLoggedIn ? (
-              <div className="flex items-center gap-2">
-                <Link to="/profile" className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg hover:from-indigo-100 hover:to-purple-100 transition-all">
-                  <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">
-                    <User size={16} className="text-white" />
-                  </div>
-                  <span className="text-sm font-semibold text-gray-700 capitalize hidden lg:block">{userRole}</span>
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                  title="Logout"
-                >
-                  <LogOut size={20} />
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link
-                  to="/login"
-                  className="px-4 py-2 text-gray-700 font-semibold hover:text-indigo-600 transition-colors"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
-                >
-                  Sign Up
-                </Link>
-              </div>
-            )}
+            {/* User Profile - Always Visible */}
+            <div className="relative">
+              <button
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg hover:from-indigo-100 hover:to-purple-100 transition-all"
+              >
+                <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">
+                  <User size={16} className="text-white" />
+                </div>
+                {isLoggedIn && (
+                  <span className="text-sm font-semibold text-gray-700 hidden lg:block">{userName}</span>
+                )}
+                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Dropdown Menu */}
+              {showProfileMenu && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50">
+                  {isLoggedIn ? (
+                    <>
+                      <Link to="/profile" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 transition-colors">
+                        <UserCircle size={20} className="text-indigo-600" />
+                        <span className="text-gray-700 font-medium">Edit Profile</span>
+                      </Link>
+                      <Link to="/my-orders" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 transition-colors">
+                        <ShoppingBag size={20} className="text-indigo-600" />
+                        <span className="text-gray-700 font-medium">My Orders</span>
+                      </Link>
+                      <hr className="my-2 border-gray-100" />
+                      <Link to="/register" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors">
+                        <User size={20} className="text-green-600" />
+                        <span className="text-gray-700 font-medium">Create Another Account</span>
+                      </Link>
+                      <button onClick={() => { setShowProfileMenu(false); handleLogout(); }} className="flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors w-full text-left">
+                        <LogOut size={20} className="text-red-600" />
+                        <span className="text-red-600 font-medium">Logout</span>
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/login" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 transition-colors">
+                        <User size={20} className="text-indigo-600" />
+                        <span className="text-gray-700 font-medium">Login</span>
+                      </Link>
+                      <Link to="/register" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 transition-colors">
+                        <UserCircle size={20} className="text-indigo-600" />
+                        <span className="text-gray-700 font-medium">Sign Up</span>
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -127,4 +144,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
