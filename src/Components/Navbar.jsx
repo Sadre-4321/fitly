@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { isAuthenticated, getUserRole, logoutUser } from '../pages/services/authApi';
-import { User, LogOut, ShoppingBag, UserCircle } from 'lucide-react';
+import { User, LogOut, ShoppingBag, UserCircle, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -10,6 +10,7 @@ const Navbar = () => {
   const [userRole, setUserRole] = useState('');
   const [userName, setUserName] = useState('');
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   useEffect(() => {
     updateCartCount();
@@ -69,6 +70,14 @@ const Navbar = () => {
 
           {/* Right Side */}
           <div className="flex items-center space-x-3">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="md:hidden p-2 text-gray-700 hover:bg-indigo-50 rounded-lg transition-all"
+            >
+              {showMobileMenu ? <X size={24} /> : <Menu size={24} />}
+            </button>
+            
             {/* Cart */}
             <Link to="/cart" className="relative p-2 text-gray-700 hover:bg-indigo-50 rounded-lg transition-all group">
               <svg className="w-6 h-6 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,6 +147,18 @@ const Navbar = () => {
             </div>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {showMobileMenu && (
+          <div className="md:hidden border-t border-gray-100 py-4">
+            <div className="flex flex-col space-y-2">
+              <Link to="/" onClick={() => setShowMobileMenu(false)} className="px-4 py-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-all rounded-lg">Home</Link>
+              <Link to="/shop" onClick={() => setShowMobileMenu(false)} className="px-4 py-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-all rounded-lg">Shop</Link>
+              <Link to="/stitching-request" onClick={() => setShowMobileMenu(false)} className="px-4 py-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-all rounded-lg">Custom Stitch</Link>
+              <Link to="/about" onClick={() => setShowMobileMenu(false)} className="px-4 py-3 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium transition-all rounded-lg">Story</Link>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );

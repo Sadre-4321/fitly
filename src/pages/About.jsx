@@ -82,9 +82,6 @@ const About = () => {
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
         
         <div className="relative max-w-7xl mx-auto text-center">
-          <div className="inline-block p-6 bg-white/20 backdrop-blur rounded-full mb-6 animate-bounce">
-            <Scissors size={64} className="text-white" />
-          </div>
           <h1 className="text-6xl md:text-7xl font-black text-white mb-6 tracking-tight">
             You Like Tailor
           </h1>
@@ -98,7 +95,7 @@ const About = () => {
       </div>
 
       {/* Stats Section */}
-      <div className="max-w-7xl mx-auto px-4 -mt-16 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 mt-8 relative z-10">
         <div className="grid md:grid-cols-4 gap-6">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
