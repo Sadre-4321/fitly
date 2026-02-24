@@ -360,9 +360,9 @@ const StitchingRequest = () => {
                 {/* Right: Measurement Form */}
                 <div className="space-y-4">
                   {/* Fitting Preference */}
-                  <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-2xl border-2 border-indigo-200">
+                  <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-2xl border-2 border-indigo-200 mb-6">
                     <label className="text-lg font-bold text-gray-800 mb-4 block">Choose Fitting Style</label>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="flex gap-3 overflow-x-auto pb-2">
                       {getFittingOptions('Shirt').map((fit) => (
                         <label
                           key={fit.value}
@@ -480,9 +480,9 @@ const StitchingRequest = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-2xl border-2 border-indigo-200">
+                  <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-2xl border-2 border-indigo-200 mb-6">
                     <label className="text-lg font-bold text-gray-800 mb-4 block">Choose Fitting Style</label>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="flex gap-3 overflow-x-auto pb-2">
                       {getFittingOptions('Pant').map((fit) => (
                         <label key={fit.value} className={`cursor-pointer p-4 rounded-xl border-2 transition-all text-center ${formData.fitting === fit.value ? 'border-indigo-600 bg-indigo-100 shadow-lg scale-105' : 'border-gray-200 bg-white hover:border-indigo-300'}`}>
                           <input type="radio" name="fitting" value={fit.value} checked={formData.fitting === fit.value} onChange={handleChange} className="hidden" />
@@ -586,9 +586,9 @@ const StitchingRequest = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-2xl border-2 border-indigo-200">
+                  <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-2xl border-2 border-indigo-200 mb-6">
                     <label className="text-lg font-bold text-gray-800 mb-4 block">Choose Fitting Style</label>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="flex gap-3 overflow-x-auto pb-2">
                       {getFittingOptions('Kurta').map((fit) => (
                         <label key={fit.value} className={`cursor-pointer p-4 rounded-xl border-2 transition-all text-center ${formData.fitting === fit.value ? 'border-indigo-600 bg-indigo-100 shadow-lg scale-105' : 'border-gray-200 bg-white hover:border-indigo-300'}`}>
                           <input type="radio" name="fitting" value={fit.value} checked={formData.fitting === fit.value} onChange={handleChange} className="hidden" />
