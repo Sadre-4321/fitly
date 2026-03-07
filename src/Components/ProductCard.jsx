@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, ShoppingCart, Zap, Star } from 'lucide-react';
+import { Heart, ShoppingCart, Zap } from 'lucide-react';
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
@@ -21,7 +21,6 @@ const ProductCard = ({ product }) => {
     localStorage.setItem('cart', JSON.stringify(cart));
     window.dispatchEvent(new Event('storage'));
     
-    // Show notification
     setShowNotification(true);
     setTimeout(() => setShowNotification(false), 2000);
   };
@@ -33,96 +32,83 @@ const ProductCard = ({ product }) => {
 
   const buyNow = (e) => {
     e.stopPropagation();
-    navigate(`/product/${product._id}`);
+    
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to buy this product');
+      navigate('/login');
+      return;
+    }
+    
+    const cart = [{ ...product, quantity: 1, selectedSize: 'M' }];
+    localStorage.setItem('buyNowCart', JSON.stringify(cart));
+    navigate('/checkout');
   };
 
   return (
     <div 
       onClick={() => navigate(`/product/${product._id}`)}
-      className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 group cursor-pointer relative"
+      className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-300 group cursor-pointer"
     >
-      {/* Notification */}
       {showNotification && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg animate-bounce">
-          ✓ Added to Cart!
+        <div className="fixed top-20 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-in">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          Added to Cart!
         </div>
       )}
 
-      {/* Wishlist Button */}
-      <button
-        onClick={toggleWishlist}
-        className="absolute top-3 right-3 z-10 bg-white/90 backdrop-blur p-2 rounded-full hover:bg-white transition-all shadow-md"
-      >
-        <Heart 
-          size={20} 
-          className={`${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'} transition-colors`}
-        />
-      </button>
-
-      {/* Product Image */}
-      <div className="relative overflow-hidden h-72 bg-gray-100">
+      <div className="relative h-72 bg-gray-50 overflow-hidden">
         <img 
           src={product.image} 
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         
-        {/* Category Badge */}
-        <div className="absolute top-3 left-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-bold">
-          {product.category}
-        </div>
+        <button
+          onClick={toggleWishlist}
+          className="absolute top-3 right-3 bg-white/90 backdrop-blur p-2 rounded-full hover:bg-white shadow-md transition-all"
+        >
+          <Heart 
+            size={18} 
+            className={`${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'} transition-colors`}
+          />
+        </button>
 
-        {/* Rating Badge */}
-        <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg flex items-center gap-1">
-          <Star size={14} className="text-yellow-500 fill-yellow-500" />
-          <span className="text-xs font-bold">4.5</span>
-        </div>
+        {product.category && (
+          <div className="absolute top-3 left-3 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+            {product.category}
+          </div>
+        )}
       </div>
       
-      {/* Product Info */}
       <div className="p-4">
-        <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-1 group-hover:text-indigo-600 transition-colors">
+        <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-blue-600 transition-colors">
           {product.name}
         </h3>
         
-        {/* Description */}
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+        <p className="text-sm text-gray-600 mb-3 line-clamp-2 h-10">{product.description}</p>
         
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {product.fabric && (
-            <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded-md text-xs font-medium">
-              {product.fabric}
-            </span>
-          )}
-          {product.color && (
-            <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded-md text-xs font-medium">
-              {product.color}
-            </span>
-          )}
-        </div>
-        
-        {/* Price */}
-        <div className="mb-4">
-          <span className="text-2xl font-black text-indigo-600">₹{product.price}</span>
-          <span className="text-sm text-gray-500 line-through ml-2">₹{Math.round(product.price * 1.3)}</span>
-          <span className="text-sm text-green-600 font-semibold ml-2">23% off</span>
+        <div className="flex items-baseline gap-2 mb-4">
+          <span className="text-2xl font-bold text-gray-900">₹{product.price}</span>
+          <span className="text-sm text-gray-400 line-through">₹{Math.round(product.price * 1.3)}</span>
+          <span className="text-xs text-green-600 font-semibold">23% off</span>
         </div>
 
-        {/* Action Buttons - Flipkart Style */}
         <div className="flex gap-2">
           <button 
             onClick={addToCart}
-            className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-3 rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all font-bold shadow-md hover:shadow-lg"
+            className="flex-1 flex items-center justify-center gap-2 bg-white border-2 border-blue-600 text-blue-600 py-2.5 rounded-lg hover:bg-blue-50 transition-all font-semibold text-sm"
           >
-            <ShoppingCart size={18} />
+            <ShoppingCart size={16} />
             Add to Cart
           </button>
           <button 
             onClick={buyNow}
-            className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-600 to-red-600 text-white py-3 rounded-lg hover:from-orange-700 hover:to-red-700 transition-all font-bold shadow-md hover:shadow-lg"
+            className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-all font-semibold text-sm shadow-md"
           >
-            <Zap size={18} />
+            <Zap size={16} />
             Buy Now
           </button>
         </div>

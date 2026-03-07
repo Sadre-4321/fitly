@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/auth';
+const API_URL = 'https://fitly-backend.onrender.com/api/auth';
 
 // Register User
 export const registerUser = async (userData) => {
@@ -20,6 +20,11 @@ export const loginUser = async (credentials) => {
     const tokenPayload = JSON.parse(atob(response.data.token.split('.')[1]));
     localStorage.setItem('role', tokenPayload.role || 'user');
     localStorage.setItem('userId', tokenPayload.id);
+    
+    // Store user name if available in response
+    if (response.data.user && response.data.user.name) {
+      localStorage.setItem('userName', response.data.user.name);
+    }
   }
   
   return response.data;
@@ -30,6 +35,7 @@ export const logoutUser = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('role');
   localStorage.removeItem('userId');
+  localStorage.removeItem('userName');
 };
 
 // Get Current User Token
@@ -60,4 +66,18 @@ export const setAuthHeader = () => {
   } else {
     delete axios.defaults.headers.common['Authorization'];
   }
+};
+
+// Get User Profile
+export const getUserProfile = async () => {
+  setAuthHeader();
+  const response = await axios.get(`${API_URL}/profile`);
+  return response.data;
+};
+
+// Update User Profile
+export const updateUserProfile = async (userData) => {
+  setAuthHeader();
+  const response = await axios.put(`${API_URL}/profile`, userData);
+  return response.data;
 };

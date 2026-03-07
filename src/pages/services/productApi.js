@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken } from './authApi';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://fitly-backend.onrender.com/api';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {

@@ -27,8 +27,14 @@ const Navbar = () => {
   const checkAuthStatus = () => {
     setIsLoggedIn(isAuthenticated());
     setUserRole(getUserRole());
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    setUserName(user.name || 'User');
+    
+    // Get user name from localStorage
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      // Try to get from profile API or localStorage
+      const storedName = localStorage.getItem('userName');
+      setUserName(storedName || 'User');
+    }
   };
 
   const handleLogout = () => {
@@ -94,51 +100,93 @@ const Navbar = () => {
             <div className="relative">
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg hover:from-indigo-100 hover:to-purple-100 transition-all"
+                className="flex flex-col items-center gap-0.5 px-2 py-1 hover:bg-gray-50 rounded-lg transition-all"
               >
-                <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">
-                  <User size={16} className="text-white" />
+                <div className="flex items-center gap-1.5">
+                  <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center overflow-hidden">
+                    {/* Profile image will go here - for now showing icon */}
+                    <User size={18} className="text-white" />
+                  </div>
+                  <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </div>
-                {isLoggedIn && (
-                  <span className="text-sm font-semibold text-gray-700 hidden lg:block">{userName}</span>
-                )}
-                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <span className="text-[11px] font-normal text-gray-600 max-w-[80px] truncate">
+                  {isLoggedIn ? userName : 'Login'}
+                </span>
               </button>
 
               {/* Dropdown Menu */}
               {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50">
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-2xl border border-gray-100 py-2 z-50">
                   {isLoggedIn ? (
                     <>
-                      <Link to="/profile" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 transition-colors">
-                        <UserCircle size={20} className="text-indigo-600" />
-                        <span className="text-gray-700 font-medium">Edit Profile</span>
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <p className="text-sm font-semibold text-gray-900">{userName}</p>
+                        <p className="text-xs text-gray-500">Welcome back!</p>
+                      </div>
+                      <Link to="/profile" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors">
+                        <UserCircle size={18} className="text-gray-600" />
+                        <span className="text-sm text-gray-700">My Profile</span>
                       </Link>
-                      <Link to="/my-orders" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 transition-colors">
-                        <ShoppingBag size={20} className="text-indigo-600" />
-                        <span className="text-gray-700 font-medium">My Orders</span>
+                      <Link to="/my-orders" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors">
+                        <ShoppingBag size={18} className="text-gray-600" />
+                        <span className="text-sm text-gray-700">Orders</span>
+                      </Link>
+                      <Link to="/wishlist" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors">
+                        <svg className="w-[18px] h-[18px] text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        <span className="text-sm text-gray-700">Wishlist</span>
+                      </Link>
+                      <Link to="/rewards" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors">
+                        <svg className="w-[18px] h-[18px] text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-sm text-gray-700">Rewards</span>
+                      </Link>
+                      <Link to="/gift-cards" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors">
+                        <svg className="w-[18px] h-[18px] text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                        </svg>
+                        <span className="text-sm text-gray-700">Gift Cards</span>
                       </Link>
                       <hr className="my-2 border-gray-100" />
-                      <Link to="/register" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors">
-                        <User size={20} className="text-green-600" />
-                        <span className="text-gray-700 font-medium">Create Another Account</span>
-                      </Link>
-                      <button onClick={() => { setShowProfileMenu(false); handleLogout(); }} className="flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors w-full text-left">
-                        <LogOut size={20} className="text-red-600" />
-                        <span className="text-red-600 font-medium">Logout</span>
+                      <button onClick={() => { setShowProfileMenu(false); handleLogout(); }} className="flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 transition-colors w-full text-left">
+                        <LogOut size={18} className="text-red-600" />
+                        <span className="text-sm text-red-600 font-medium">Logout</span>
                       </button>
                     </>
                   ) : (
                     <>
-                      <Link to="/login" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 transition-colors">
-                        <User size={20} className="text-indigo-600" />
-                        <span className="text-gray-700 font-medium">Login</span>
+                      <div className="px-4 py-3 bg-blue-50 border-b border-blue-100">
+                        <p className="text-sm text-gray-700">New customer? <Link to="/register" onClick={() => setShowProfileMenu(false)} className="text-blue-600 font-semibold hover:underline">Sign Up</Link></p>
+                      </div>
+                      <Link to="/profile" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors">
+                        <UserCircle size={18} className="text-gray-600" />
+                        <span className="text-sm text-gray-700">My Profile</span>
                       </Link>
-                      <Link to="/register" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 transition-colors">
-                        <UserCircle size={20} className="text-indigo-600" />
-                        <span className="text-gray-700 font-medium">Sign Up</span>
+                      <Link to="/my-orders" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors">
+                        <ShoppingBag size={18} className="text-gray-600" />
+                        <span className="text-sm text-gray-700">Orders</span>
+                      </Link>
+                      <Link to="/wishlist" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors">
+                        <svg className="w-[18px] h-[18px] text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        <span className="text-sm text-gray-700">Wishlist</span>
+                      </Link>
+                      <Link to="/rewards" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors">
+                        <svg className="w-[18px] h-[18px] text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-sm text-gray-700">Rewards</span>
+                      </Link>
+                      <Link to="/gift-cards" onClick={() => setShowProfileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors">
+                        <svg className="w-[18px] h-[18px] text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                        </svg>
+                        <span className="text-sm text-gray-700">Gift Cards</span>
                       </Link>
                     </>
                   )}
